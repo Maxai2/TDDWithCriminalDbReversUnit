@@ -28,6 +28,14 @@ namespace TDD
                 throw new ArgumentOutOfRangeException(nameof(term), msg);
             }
 
+            foreach (var cr in criminals)
+            {
+                if (cr.Code == criminal.Code)
+                {
+                    throw new ArgumentException($"{nameof(criminal.Code)}", $"Criminal with code: {criminal.Code} is already excist");
+                }
+            }
+
             criminal.DaysTerm = term;
             criminal.Jailed = true;
             criminals.Add(criminal);
@@ -40,12 +48,12 @@ namespace TDD
 
         public IEnumerable<Criminal> GetAll()
         {
-            throw new NotImplementedException();
+            return criminals;
         }
 
         public Criminal Get(int id)
         {
-            throw new NotImplementedException();
+            return criminals.Where(c => c.Id == id) as Criminal;
         }
 
         public void IncreaseTerm(Criminal cr, int days)
