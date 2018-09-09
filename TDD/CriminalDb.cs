@@ -4,11 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+//---------------------------------------------------
+
 namespace TDD
 {
     public class CriminalDb
     {
         List<Criminal> criminals = new List<Criminal>();
+
+        //---------------------------------------------------
 
         public void Imprison(Criminal criminal, int term)
         {
@@ -28,43 +32,73 @@ namespace TDD
                 throw new ArgumentOutOfRangeException(nameof(term), msg);
             }
 
-            foreach (var cr in criminals)
+            if (criminal.Jailed == true)
             {
-                if (cr.Code == criminal.Code)
+                var msg = $"{nameof(criminal.Jailed)} should be false";
+                throw new ArgumentException(nameof(criminal.Jailed), msg);
+            }
+
+            foreach (var item in criminals)
+            {
+                if (item.Code == criminal.Code)
                 {
-                    throw new ArgumentException($"{nameof(criminal.Code)}", $"Criminal with code: {criminal.Code} is already excist");
+                    criminal.Jailed = false;
+                    return;
+                    //throw new ArgumentException(nameof(criminal.Code), $"{nameof(criminal.Code)} was in CriminalDb");
                 }
             }
 
             criminal.DaysTerm = term;
             criminal.Jailed = true;
+
             criminals.Add(criminal);
         }
 
+        //---------------------------------------------------
+
         public void Release(Criminal criminal)
         {
-            throw new NotImplementedException();
+            if (criminal is null)
+            {
+                throw new ArgumentNullException(nameof(criminal));
+            }
+
+            if (criminal.Jailed == false)
+            {
+                throw new ArgumentException(nameof(criminal.Jailed));
+            }
+
+            criminal.Jailed = false;
         }
+
+        //---------------------------------------------------
 
         public IEnumerable<Criminal> GetAll()
         {
             return criminals;
         }
 
+        //---------------------------------------------------
+
         public Criminal Get(int id)
         {
             return criminals.Where(c => c.Id == id) as Criminal;
         }
 
+        //---------------------------------------------------
+
         public void IncreaseTerm(Criminal cr, int days)
         {
-            throw new NotImplementedException();
+            cr.DaysTerm += days;
         }
+
+        //---------------------------------------------------
 
         public void DecreaseTerm(Criminal cr, int days)
         {
-            throw new NotImplementedException();
+            cr.DaysTerm -= days;
         }
 
+        //---------------------------------------------------
     }
 }
