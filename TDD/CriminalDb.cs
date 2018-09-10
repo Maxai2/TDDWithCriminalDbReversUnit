@@ -82,7 +82,19 @@ namespace TDD
 
         public Criminal Get(int id)
         {
-            return criminals.Where(c => c.Id == id) as Criminal;
+            //if (id <= 0)
+            //{
+            //    throw new ArgumentOutOfRangeException(nameof(id));
+            //}
+
+            var criminal = criminals.Where(c => c.Id == id) as Criminal;
+
+            if (criminal is null)
+            {
+                return null;
+            }
+
+            return criminal;
         }
 
         //---------------------------------------------------

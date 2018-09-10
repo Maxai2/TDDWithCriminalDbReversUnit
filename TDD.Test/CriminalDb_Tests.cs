@@ -376,8 +376,171 @@ namespace TDD.Test
 
             //var action = new Action(() => db.GetAll());
 
-            Assert.NotEmpty(db.GetAll());
+            Assert.Empty(db.GetAll());
         }
+
+        //------------------------------------------------------------------------------------------------
+
+        /*id должен быть больше 0
+		теория: передаем несколько невалидных id и ждем исключение*/
+
+        [Theory]
+        [InlineData(0), InlineData(-20), InlineData(-4560), InlineData(-10)]
+        void Get_False_Id_Test(int id)
+        {
+            var db = new CriminalDb();
+
+            var criminal = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 1,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            db.Imprison(criminal, 60);
+
+            var ex = Assert.ThrowsAny<Exception>(() => db.Get(id));
+
+            Assert.IsType<ArgumentOutOfRangeException>(ex);
+        }
+
+        //------------------------------------------------------------------------------------------------ 
+
+        /*id должен быть больше 0
+		теория: передаем несколько валидных id и не ждем исключение*/
+
+        [Theory]
+        [InlineData(1), InlineData(2), InlineData(5)]
+        void Get_True_Id_Test(int id)
+        {
+            var db = new CriminalDb();
+
+            var criminal1 = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 1,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            db.Imprison(criminal1, 60);
+
+            var criminal2 = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 2,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            db.Imprison(criminal2, 60);
+
+            var criminal5 = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 5,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            db.Imprison(criminal5, 60);
+
+            db.Get(id);
+        }
+
+        //------------------------------------------------------------------------------------------------
+
+        /*	если Criminal с таким id не найден - метод должен вернуть null
+		теория: передаем несколько невалидных id и ждем null*/
+
+        [Theory]
+        [InlineData(0), InlineData(-20), InlineData(-4560), InlineData(-10)]
+        void Get_False_Id_Test_And_Wait_Null(int id)
+        {
+            var db = new CriminalDb();
+
+            var criminal = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 1,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            db.Imprison(criminal, 60);
+
+            Assert.Null(db.Get(id));
+        }
+
+        //------------------------------------------------------------------------------------------------
+
+        /*	если Criminal найден - метод должен вернуть ссылку на него
+		теория: передаем несколько валидных id и ждем объекты типа Criminal ????*/
+
+        [Theory]
+        [InlineData(1)]
+        void Get_False_Id_Test_And_Wait_Criminal(int id)
+        {
+            var db = new CriminalDb();
+
+            var criminal = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 1,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            db.Imprison(criminal, 60);
+
+            Assert.Equal(criminal, db.Get(id));
+        }
+
+        //------------------------------------------------------------------------------------------------
+
+        /*	criminal не должен быть null
+		факт: передаем нулл и ждем исключение*/
+
+        [Fact]
+        void 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         //[Theory]
