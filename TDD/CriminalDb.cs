@@ -63,6 +63,13 @@ namespace TDD
                 throw new ArgumentNullException(nameof(criminal));
             }
 
+            var cr = criminals.Where(c => c.Id == criminal.Id).FirstOrDefault();
+
+            if (cr is null)
+            {
+                throw new KeyNotFoundException();
+            }
+
             if (criminal.Jailed == false)
             {
                 throw new ArgumentException(nameof(criminal.Jailed));
@@ -82,12 +89,12 @@ namespace TDD
 
         public Criminal Get(int id)
         {
-            //if (id <= 0)
-            //{
-            //    throw new ArgumentOutOfRangeException(nameof(id));
-            //}
+            if (id <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(id));
+            }
 
-            var criminal = criminals.Where(c => c.Id == id) as Criminal;
+            var criminal = criminals.Where(c => c.Id == id).FirstOrDefault();
 
             if (criminal is null)
             {
@@ -101,14 +108,63 @@ namespace TDD
 
         public void IncreaseTerm(Criminal cr, int days)
         {
+            if (cr is null)
+            {
+                throw new ArgumentNullException(nameof(cr));
+            }
+
+            var tempCr = criminals.Where(c => c.Id == cr.Id).FirstOrDefault();
+
+            if (tempCr is null)
+            {
+                throw new KeyNotFoundException();
+            }
+
+            if (days <= 0 || days > 5000)
+            {
+                throw new ArgumentOutOfRangeException(nameof(days));
+            }
+
             cr.DaysTerm += days;
+
+            if (cr.DaysTerm >= 5000)
+            {
+                cr.DaysTerm = 5000;
+            }
         }
 
         //---------------------------------------------------
 
         public void DecreaseTerm(Criminal cr, int days)
         {
+            if (cr is null)
+            {
+                throw new ArgumentNullException(nameof(cr));
+            }
+
+            var tempCr = criminals.Where(c => c.Id == cr.Id).FirstOrDefault();
+
+            if (tempCr is null)
+            {
+                throw new KeyNotFoundException();
+            }
+
+            if (days <= 0 || days > 5000)
+            {
+                throw new ArgumentOutOfRangeException(nameof(days));
+            }
+
             cr.DaysTerm -= days;
+
+            if (cr.DaysTerm < 0)
+            {
+                cr.DaysTerm = 0;
+            }
+
+            if (cr.DaysTerm == 0)
+            {
+                cr.Jailed = false;
+            }
         }
 
         //---------------------------------------------------

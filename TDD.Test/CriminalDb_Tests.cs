@@ -158,7 +158,7 @@ namespace TDD.Test
         //------------------------------------------------------------------------------------------------
         /*
 	    criminal не должен быть Jailed на момент вызова метода
-		факт: передаем criminal с Jailed = false и не ждем исключение ????*/
+		факт: передаем criminal с Jailed = false и не ждем исключение*/
         [Fact]
         void Imprision_Test_Criminal_Jailed_False()
         {
@@ -251,6 +251,32 @@ namespace TDD.Test
         }
 
         //------------------------------------------------------------------------------------------------
+
+        /*при использовании Realese надо проверить что Criminal есть в коллекции*/
+
+        [Fact]
+        void Release_Criminal_In_Collection()
+        {
+            var db = new CriminalDb();
+
+            var criminal = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 1,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            var ex = Assert.ThrowsAny<Exception>(() => db.Release(criminal));
+
+            Assert.IsType<KeyNotFoundException>(ex);
+        }
+
+
+        //------------------------------------------------------------------------------------------------
+
         /*
 	    criminal не должен быть null
 		факт: передаем нормальный объекти не ждем исключение*/
@@ -432,7 +458,7 @@ namespace TDD.Test
 
             var criminal2 = new Criminal
             {
-                Code = "A456",
+                Code = "A416",
                 Crime = "Kill man",
                 DateOfBirth = new DateTime(2000, 2, 12),
                 Id = 2,
@@ -444,7 +470,7 @@ namespace TDD.Test
 
             var criminal5 = new Criminal
             {
-                Code = "A456",
+                Code = "A426",
                 Crime = "Kill man",
                 DateOfBirth = new DateTime(2000, 2, 12),
                 Id = 5,
@@ -463,7 +489,7 @@ namespace TDD.Test
 		теория: передаем несколько невалидных id и ждем null*/
 
         [Theory]
-        [InlineData(0), InlineData(-20), InlineData(-4560), InlineData(-10)]
+        [InlineData(156), InlineData(456), InlineData(7894), InlineData(1562)]
         void Get_False_Id_Test_And_Wait_Null(int id)
         {
             var db = new CriminalDb();
@@ -515,13 +541,390 @@ namespace TDD.Test
 		факт: передаем нулл и ждем исключение*/
 
         [Fact]
-        void 
+        void IncreaseTerm_Send_Null_And_Wait_Exception_Test()
+        {
+            var db = new CriminalDb();
+
+            var ex = Assert.ThrowsAny<Exception>(() => db.IncreaseTerm(null, 50));
+
+            Assert.IsType<ArgumentNullException>(ex);
+        }
+
+        //------------------------------------------------------------------------------------------------
+
+        /*при использовании Get надо проверить что Criminal есть в коллекции*/
+
+        [Fact]
+        void IncreaseTerm_Criminal_In_Collection()
+        {
+            var db = new CriminalDb();
+
+            var criminal = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 1,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            var ex = Assert.ThrowsAny<Exception>(() => db.IncreaseTerm(criminal, 10));
+
+            Assert.IsType<KeyNotFoundException>(ex);
+        }
+
+        //------------------------------------------------------------------------------------------------
+
+        /*
+	    criminal не должен быть null
+		факт: передаем нормальный объект и не ждем исключение*/
+
+        [Fact]
+        void IncreaseTerm_Send_Normal_Criminal()
+        {
+            var db = new CriminalDb();
+
+            var criminal = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 1,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            db.Imprison(criminal, 50);
+
+            db.IncreaseTerm(criminal, 60);
+        }
+
+        //------------------------------------------------------------------------------------------------
+
+        /*
+	    days должен быть положительный и не превышать 5000
+		теория: передаем несколько валидных days и не ждем исключение*/
+
+        [Theory]
+        [InlineData(20), InlineData(365), InlineData(4900)]
+        void IncreaseTerm_Send_True_Days(int days)
+        {
+            var db = new CriminalDb();
+
+            var criminal = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 1,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            db.Imprison(criminal, 10);
+
+            db.IncreaseTerm(criminal, days);
+        }
+
+        //------------------------------------------------------------------------------------------------
+
+        /*
+        days должен быть положительный и не превышать 5000
+        теория: передаем несколько невалидных days и ждем исключение*/
+
+        [Theory]
+        [InlineData(-50), InlineData(-123), InlineData(6000)]
+        void IncreaseTerm_Send_False_Days(int days)
+        {
+            var db = new CriminalDb();
+
+            var criminal = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 1,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            db.Imprison(criminal, 10);
+
+            var ex = Assert.ThrowsAny<Exception>(() => db.IncreaseTerm(criminal, days));
+
+            Assert.IsType<ArgumentOutOfRangeException>(ex);
+        }
+
+        //------------------------------------------------------------------------------------------------
+
+        /*
+	    метод должен увеличивать DaysTerm переданного criminal
+		теория: передаем несколько валидных days и проверяем увеличение DaysTerm*/
+
+        [Theory]
+        [InlineData(20), InlineData(365), InlineData(4900)]
+        void IncreaseTerm_Send_True_Days_And_Check_Their_Increase(int days)
+        {
+            var db = new CriminalDb();
+
+            var criminal = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 1,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            db.Imprison(criminal, 10);
+
+            int tempDays = db.Get(1).DaysTerm;
+
+            db.IncreaseTerm(criminal, days);
+
+            Assert.Equal(tempDays + days, db.Get(1).DaysTerm);
+        }
+
+        //------------------------------------------------------------------------------------------------
+
+        /*суммарный DaysTerm не должен превышать 5000 (округлять до 5000)
+		теория: передаем несколько days, в том числе очень больших и проверяем значение DaysTerm*/
+
+        [Theory]
+        [InlineData(5000), InlineData(4800), InlineData(4900)]
+        void IncreaseTerm_Send_True_Days_And_Check_Their_Sum(int days)
+        {
+            var db = new CriminalDb();
+
+            var criminal = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 1,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            db.Imprison(criminal, 500);
+
+            db.IncreaseTerm(criminal, days);
+
+            Assert.Equal(5000, db.Get(1).DaysTerm);
+        }
+
+        //------------------------------------------------------------------------------------------------
+
+        /*
+	    criminal не должен быть null
+		факт: передаем нулл и ждем исключение*/
+
+        [Fact]
+        void DecreaseTerm_Send_Null_And_Wait_Exc()
+        {
+            var db = new CriminalDb();
+
+            var criminal = default(Criminal);
+
+            var ex = Assert.ThrowsAny<Exception>(() => db.DecreaseTerm(criminal, 20));
+
+            Assert.IsType<ArgumentNullException>(ex);
+        }
 
 
+        //------------------------------------------------------------------------------------------------
 
+        /*при использовании Get надо проверить что Criminal есть в коллекции*/
 
+        [Fact]
+        void DecreaseTerm_Criminal_In_Collection()
+        {
+            var db = new CriminalDb();
 
+            var criminal = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 1,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
 
+            var ex = Assert.ThrowsAny<Exception>(() => db.DecreaseTerm(criminal, 10));
+
+            Assert.IsType<KeyNotFoundException>(ex);
+        }
+
+        //------------------------------------------------------------------------------------------------
+
+        /*	criminal не должен быть null
+		факт: передаем нормальный объект и не ждем исключение*/
+
+        [Fact]
+        void DecreaseTerm_Send_Normal()
+        {
+            var db = new CriminalDb();
+
+            var criminal = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 1,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            db.Imprison(criminal, 50);
+
+            db.DecreaseTerm(criminal, 20);
+        }
+
+        //------------------------------------------------------------------------------------------------
+
+        /*
+	    days должен быть положительный и не превышать 5000 
+		теория: передаем несколько валидных days и не ждем исключение*/
+
+        [Theory]
+        [InlineData(20), InlineData(365), InlineData(450)]
+        void DecreaseTerm_Send_True_Days(int days)
+        {
+            var db = new CriminalDb();
+
+            var criminal = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 1,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            db.Imprison(criminal, 500);
+
+            db.DecreaseTerm(criminal, days);
+        }
+
+        //------------------------------------------------------------------------------------------------
+
+        /*
+	    days должен быть положительный и не превышать 5000 
+		теория: передаем несколько невалидных days и ждем исключение*/
+
+        [Theory]
+        [InlineData(-50), InlineData(-123), InlineData(6000)]
+        void DecreaseTerm_Send_False_Days(int days)
+        {
+            var db = new CriminalDb();
+
+            var criminal = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 1,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            db.Imprison(criminal, 500);
+
+            var ex = Assert.ThrowsAny<Exception>(() => db.DecreaseTerm(criminal, days));
+
+            Assert.IsType<ArgumentOutOfRangeException>(ex);
+        }
+
+        //------------------------------------------------------------------------------------------------
+
+        /*
+	    метод должен уменьшать DaysTerm переданного criminal
+		теория: передаем несколько валидных days и проверяем уменьшение DaysTerm*/
+
+        [Theory]
+        [InlineData(20), InlineData(365), InlineData(450)]
+        void DecreaseTerm_Send_True_Days_And_Check_Their_Decreaser(int days)
+        {
+            var db = new CriminalDb();
+
+            var criminal = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 1,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            db.Imprison(criminal, 500);
+
+            int tempDays = db.Get(1).DaysTerm;
+
+            db.DecreaseTerm(criminal, days);
+
+            Assert.Equal(tempDays - days, db.Get(1).DaysTerm);
+        }
+
+        //------------------------------------------------------------------------------------------------
+
+        /*полученный в результате DaysTerm не должен быть меньше 0
+		теория: передаем несколько days, в том числе очень больших и проверяем значение DaysTerm*/
+
+        [Theory]
+        [InlineData(40), InlineData(20), InlineData(500)]
+        void DecreaseTerm_Send_True_Days_And_Check_Less_Than_Zero(int days)
+        {
+            var db = new CriminalDb();
+
+            var criminal = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 1,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            db.Imprison(criminal, 10);
+
+            db.DecreaseTerm(criminal, days);
+
+            Assert.Equal(0, db.Get(1).DaysTerm);
+        }
+
+        //------------------------------------------------------------------------------------------------
+
+        /*при достижении DaysTerm 0 - нужно выпустить criminal (сделать Jailed = false)
+		теория: передаем несколько days, которые точно уменьшат DaysTerm до 0 и проверяем Jailed*/
+
+        [Theory]
+        [InlineData(40), InlineData(20), InlineData(500)]
+        void DecreaseTerm_Send_True_Days_And_Check_Jailed_Is_False(int days)
+        {
+            var db = new CriminalDb();
+
+            var criminal = new Criminal
+            {
+                Code = "A456",
+                Crime = "Kill man",
+                DateOfBirth = new DateTime(2000, 2, 12),
+                Id = 1,
+                Name = "qwerty",
+                Surname = "Sqwerty"
+            };
+
+            db.Imprison(criminal, 10);
+
+            db.DecreaseTerm(criminal, days);
+
+            Assert.False(criminal.Jailed);
+        }
 
 
 
